@@ -5,22 +5,37 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Ajax Crud </title>
     <link rel="stylesheet" href="{{asset('css/bootstrap.css')}}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <style>
+        .parsley-errors-list li {
+            list-style: none;
+            color: red;
+            font-family: tahoma;
+            font-style: italic;
+            padding-top: 1px;
+            margin-top: 1px;
+            font-weight: 700;
+            text-align: left;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
         <div class="col-md-12">
             <h3 class="card card-body text-info">Student Information</h3>
-            <h3 id="successMessage"></h3>
+            <h3 id="successMessage" class="text-info"></h3>
             <button type="button" class="btn btn-success mt-2 mb-2" data-bs-toggle="modal" data-bs-target="#customerModal">
                 Add Customer
             </button>
+            <a href="#" class="btn btn-danger mt-2 mb-2" id="deleteAllSelectRecord">Delete Selected</a>
             <table class="table table-bordered text-center" id="customerTable">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="chkCheckAll"></th>
                         <th>S.L</th>
                         <th>Customer ID</th>
                         <th>Customer Name</th>
@@ -33,6 +48,7 @@
                 <tbody>
                     @foreach($customer as $customers)
                     <tr id="customer{{$customers->id}}">
+                        <td><input type="checkbox" name="ids" class="checkBoxClass" value="{{$customers->id}} "></td>
                         <td>{{$loop->index+1}}</td>
                         <td>{{$customers->id}} </td>
                         <td>{{$customers->name}}</td>
@@ -58,7 +74,7 @@
     <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="background-color:#5DADE2  ;">
                     <h5 class="modal-title" id="exampleModalLabel">Add New Customer</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -67,24 +83,28 @@
                         @csrf
                         <div class="mb-12">
                             <label for="recipient-name" class="col-form-label">Customer Name:</label>
-                            <input type="text" class="form-control" id="name" name="name">
+                            <input type="text" class="form-control" id="name" name="name" required data-parsley-pattern="[a-z A-Z]+$" data-parsley-trigger="keyup" data-parsley-error-message="Name Is not Valid <span style='color:green'> Please Enter Correct Name</span>">
                         </div>
                         <div class="mb-12">
                             <label for="recipient-name" class="col-form-label">Customer Email:</label>
-                            <input type="text" class="form-control" id="email" name="email">
+                            <input type="text" class="form-control" id="email" name="email" required data-parsley-type="email" data-parsley-trigger="keyup" data-parsley-error-message="Email Is not Valid <span style='color:green'> Please Enter Correct Email</span>">
                         </div>
                         <div class="mb-12">
                             <label for="recipient-name" class="col-form-label">Customer Phone:</label>
-                            <input type="text" class="form-control" id="phone" name="phone">
+                            <input type="text" class="form-control" id="phone" name="phone" required data-parsley-length="[11,11]" data-parsley-trigger="keyup" data-parsley-error-message="Number Is not Valid <span style='color:green'> Phone Number Must Be 11 Digit</span>">
+                        </div>
+                        <div class="mb-12">
+                            <label for="recipient-name" class="col-form-label">Confirm Phone</label>
+                            <input type="text" class="form-control" id="cphone" name="cphone" required data-parsley-equalto="#phone" data-parsley-trigger="keyup" data-parsley-error-message="Number Is not Same <span style='color:green'> Please Enter Same Number</span>">
                         </div>
 
                         <div class="mb-12">
                             <label for="message-text" class="col-form-label">Customer Address:</label>
-                            <textarea class="form-control" id="address" name="address"></textarea>
+                            <textarea class="form-control" id="address" name="address" required data-parsley-trigger="keyup"></textarea>
                         </div>
 
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="background-color:#5DADE2  ;">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Add Customer</button>
                 </div>
@@ -184,39 +204,48 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="{{asset('js/bootstrap.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.min.js" integrity="sha512-eyHL1atYNycXNXZMDndxrDhNAegH2BDWt1TmkXJPoGf1WLlNYt08CSjkqF5lnCRmdm3IrkHid8s2jOUY4NIZVQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script>
-        $('#addCustomer').submit(function(e) {
-            e.preventDefault();
-            let name = $("#name").val();
-            let email = $("#email").val();
-            let phone = $("#phone").val();
-            let address = $("#address").val();
-            let _token = $("input[name=_token]").val();
 
-            $.ajax({
-                url: "{{route('addCustomer')}}",
-                type: "POST",
-                data: {
-                    name: name,
-                    email: email,
-                    phone: phone,
-                    address: address,
-                    _token: _token
-                },
-                success: function(response) {
-                    if (response) {
-                        window.location.reload();
-                        var message = "Your Data Hasbeen Submited Successfully";
-                        document.getElementById('successMessage').innerHTML = message;
-                        // location.reload(true);
-                        // $("#customerTable tbody").prepend('<tr><td></td> </tr>');
+    </script>
+    <script>
+        $(function() {
+            $("#addCustomer").parsley();
 
-                        // $("#customerModal").modal('hide');
-                        // $('#customerTable')[0].reset();
+            $('#addCustomer').submit(function(e) {
+                e.preventDefault();
 
+                let name = $("#name").val();
+                let email = $("#email").val();
+                let phone = $("#phone").val();
+                let address = $("#address").val();
+                let _token = $("input[name=_token]").val();
+                $("#customerModal").modal('hide');
+                $.ajax({
+                    url: "{{route('addCustomer')}}",
+                    type: "POST",
+                    data: {
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        address: address,
+                        _token: _token
+                    },
+                    success: function(response) {
+                        if (response) {
+                            window.location.reload();
+                            var message = "Your Data Hasbeen Submited Successfully";
+                            document.getElementById('successMessage').innerHTML = message;
+                            // location.reload(true);
+                            // $("#customerTable tbody").prepend('<tr><td></td> </tr>');
+
+
+                            // $('#customerTable')[0].reset();
+
+                        }
                     }
-                }
+                })
             })
         })
     </script>
@@ -283,7 +312,7 @@
                 success: function(response) {
                     if (response) {
                         // window.location.reload();
-                        var message = "Your Data Hasbeen Submited Successfully";
+                        var message = "Your Data Has been Submited Successfully";
                         document.getElementById('successMessage').innerHTML = message;
                         window.location.reload();
                         // $("#customerTable tbody").prepend('<tr><td></td><td></td><td> ' + response.name + ' </td><td>' + response.email + '</td> <td>' + response.phone + '</td><td>' + response.address + '</td><td></td> </tr>');
@@ -319,6 +348,39 @@
         }
     </script>
     <!-- End delete function -->
+
+    <!-- Start Multi delete function -->
+    <script>
+        $(function(e) {
+            $("#chkCheckAll").click(function() {
+                $(".checkBoxClass").prop('checked', $(this).prop('checked'));
+            })
+            $("#deleteAllSelectRecord").click(function(e) {
+                e.preventDefault();
+                var allids = [];
+                $("input:checkbox[name=ids]:checked").each(function() {
+                    allids.push($(this).val());
+                });
+
+                $.ajax({
+                    url: "{{route('deleteSelectedCustomer')}}",
+                    type: "POST",
+                    data: {
+                        _token: $("input[name=_token").val(),
+                        ids: allids
+                    },
+                    success: function(response) {
+                        var message = "Your Data Has Been Deleted Successfully";
+                        document.getElementById('successMessage').innerHTML = message;
+                        $.each(allids, function(key, val) {
+                            $("#customer" + val).remove();
+                        })
+                    }
+                })
+            })
+        });
+    </script>
+    <!-- End Multi delete function -->
 
 </body>
 

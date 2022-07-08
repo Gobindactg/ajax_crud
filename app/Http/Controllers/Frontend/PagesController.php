@@ -61,4 +61,11 @@ class PagesController extends Controller
         $customer->delete();
         return response()->json(['success' => 'Record Has Been Deleted Successfully']);
     }
+
+    public function deleteCheckedCustomers(Request $request)
+    {
+        $ids = $request->ids;
+        costomer::whereIn('id', $ids)->delete();
+        return response()->json(['success' => "Selected Student Record Delete"]);
+    }
 }

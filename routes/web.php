@@ -29,3 +29,6 @@ Route::get('/updateCustomer/{id}', [PagesController::class, 'updateCustomer'])->
 Route::post('/updateCustomers', [PagesController::class, 'updateData'])->name('updateData');
 
 Route::post('/deleteCustomers/{id}', [PagesController::class, 'deleteCustomer'])->name('deleteCustomer');
+Route::post('/updateCustomers', [PagesController::class, 'updateData'])->name('updateData');
+
+Route::post('/seletedCustomer', [PagesController::class, 'deleteCheckedCustomers'])->name('deleteSelectedCustomer');
